@@ -1,3 +1,5 @@
-class splash_screen {  }
+class splash_screen {
+  //يةنين
+}
 
 // finished
