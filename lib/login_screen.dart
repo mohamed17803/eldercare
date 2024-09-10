@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'signup_screen.dart'; // Import the SignupScreen
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -116,7 +117,10 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 40.0),
                     ElevatedButton(
                       onPressed: () {
-                        // Implement sign-up navigation here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SignupScreen()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
