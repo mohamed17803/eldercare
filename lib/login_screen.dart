@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'signup_screen.dart'; // Import the SignupScreen
+import 'forget_password_screen.dart'; // Import the ForgetPasswordScreen
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -67,7 +68,10 @@ class LoginPage extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // Implement forgot password navigation here
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const UpdatePasswordScreen()),
+                          );
                         },
                         child: const Text(
                           'Forget Password?',
@@ -127,7 +131,7 @@ class LoginPage extends StatelessWidget {
                       ),
                       child: const Text(
                         'Sign Up',
-                        style: TextStyle(
+                          style: TextStyle(
                           fontSize: 43.0,
                           fontFamily: "Pacifico",
                           color: Colors.deepPurpleAccent,

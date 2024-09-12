@@ -57,6 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
+                      fontFamily: "Pacifico",
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -173,6 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
+                              fontFamily: "Pacifico",
                             ),
                           ),
                         ),
