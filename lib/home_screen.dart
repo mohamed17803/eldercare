@@ -46,8 +46,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Widget to display each medication item
-  _buildMedicationItem(String time, String name, String description) {
+
+  _buildMedicationItem(String time, String name, String description) {// Widget to display each medication item
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

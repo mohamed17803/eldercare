@@ -38,7 +38,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             // Handle back button action here
           },
         ),
-        title: Text(
+        title: const Text(
           'New medication',
           style: TextStyle(
             color: Colors.black,

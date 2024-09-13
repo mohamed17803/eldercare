@@ -1,3 +1,4 @@
+import 'package:eldercare/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'splash_screen.dart'; // Import the splash screen file
 

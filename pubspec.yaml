@@ -31,7 +31,7 @@ dependencies:
 
   flutter:
     sdk: flutter
-  intl: ^0.17.0
+  intl: ^0.19.0
 
 
 
@@ -49,7 +49,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +67,7 @@ flutter:
     - images/ec_logo.png
     - images/login_background.png
     - images/splash_screen_Background.png
+    - images/elderly.png
 
   #   - images/a_dot_ham.jpeg
 
