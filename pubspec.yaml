@@ -39,6 +39,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   font_awesome_flutter: ^10.7.0
+  audioplayers: ^6.1.0
+  volume_control: ^0.1.5
+  slider_button: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -67,7 +70,7 @@ flutter:
     - images/ec_logo.png
     - images/login_background.png
     - images/splash_screen_Background.png
-    - images/elderly.png
+    - assets/medication.mp3
 
   #   - images/a_dot_ham.jpeg
 

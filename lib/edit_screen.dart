@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
 
-class MyApp extends StatelessWidget {
+
+class EditScreen extends StatelessWidget {
+  const EditScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: NewMedicationScreen(),
     );
@@ -15,6 +15,8 @@ class MyApp extends StatelessWidget {
 }
 
 class NewMedicationScreen extends StatefulWidget {
+  const NewMedicationScreen({super.key});
+
   @override
   _NewMedicationScreenState createState() => _NewMedicationScreenState();
 }

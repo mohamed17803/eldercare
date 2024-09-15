@@ -127,7 +127,6 @@ class LoginPage extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
                       ),
                       child: const Text(
                         'Sign Up',
