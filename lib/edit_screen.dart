@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 
-
-
 class EditScreen extends StatelessWidget {
   const EditScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: NewMedicationScreen(),
-    );
+    return const NewMedicationScreen();
   }
 }
 
@@ -37,7 +32,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Color(0xFF6936F5)),
           onPressed: () {
-            // Handle back button action here
+            // You can implement a navigation back or pop action here if needed
           },
         ),
         title: const Text(
@@ -103,10 +98,10 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
                 // Handle add medication action here
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6936F5), // Updated button color parameter
-                minimumSize: Size(double.infinity, 50), // Full-width button
+                backgroundColor: Color(0xFF6936F5),
+                minimumSize: Size(double.infinity, 50),
               ),
-              child: Text(
+              child: const Text(
                 'Add medication',
                 style: TextStyle(
                   color: Colors.white,
@@ -134,7 +129,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
           controller: controller,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color(0xFFF4F3F3), //inputfield color
+            fillColor: Color(0xFFF4F3F3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
@@ -156,9 +151,9 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         ),
         SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Color(0xFFF4F3F3), //all dropdown color
+            color: Color(0xFFF4F3F3),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
