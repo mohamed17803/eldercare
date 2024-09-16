@@ -1,24 +1,13 @@
 import 'package:flutter/material.dart';
-class MedicationdetScreen extends StatelessWidget {
+
+class MedicationdetScreen extends StatefulWidget {
+  const MedicationdetScreen({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Medication Details',
-      theme: ThemeData(
-        primaryColor: Color(0xFF6936F5),
-        primarySwatch: Colors.blue,
-      ),
-      home: MedicationDetailScreen(),
-    );
-  }
+  _MedicationdetScreenState createState() => _MedicationdetScreenState();
 }
 
-class MedicationDetailScreen extends StatefulWidget {
-  @override
-  _MedicationDetailScreenState createState() => _MedicationDetailScreenState();
-}
-
-class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
+class _MedicationdetScreenState extends State<MedicationdetScreen> {
   final String medicationName = "Vitamin C";
   final String dosage = "1 pill";
   final String schedule = "every day at 08:00";
@@ -26,7 +15,6 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
   int daysDone = 4;
   final int totalDays = 14;
   List<String> dosageHistory = [];
-
   DateTime? _expirationDate;
 
   void _handleDone() {
@@ -40,7 +28,7 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
 
   void _handleSkip() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Dose skipped for today')),
+      const SnackBar(content: Text('Dose skipped for today')),
     );
   }
 
@@ -49,21 +37,21 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Medication"),
-          content: Text("Are you sure you want to delete this medication?"),
+          title: const Text("Delete Medication"),
+          content: const Text("Are you sure you want to delete this medication?"),
           actions: [
             TextButton(
               onPressed: () {
                 // Handle deletion logic
                 Navigator.of(context).pop();
               },
-              child: Text("Yes"),
+              child: const Text("Yes"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("No"),
+              child: const Text("No"),
             ),
           ],
         );
@@ -96,14 +84,14 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medication Details'),
+        title: const Text('Medication Details'),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: _handleEdit,
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: _handleDelete,
           ),
         ],
@@ -114,30 +102,30 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset('assets/vitamin_c.png', height: 100), // Ensure the image is in the specified path
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               medicationName,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
             ),
-            SizedBox(height: 8),
-            Text('Dosage: $dosage', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Schedule: $schedule', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Description: $description', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
+            const SizedBox(height: 8),
+            Text('Dosage: $dosage', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Schedule: $schedule', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Description: $description', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
             LinearProgressIndicator(
               value: (daysDone / totalDays).clamp(0.0, 1.0),
               color: Theme.of(context).primaryColor,
               backgroundColor: Colors.grey[300],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('$daysDone/$totalDays days done'),
-            SizedBox(height: 16),
-            Text('Side Effects: Possible nausea and headache.', style: TextStyle(fontSize: 16)),
-            Text('Tips: Take with food for better absorption.', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text('Dosage History:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            const Text('Side Effects: Possible nausea and headache.', style: TextStyle(fontSize: 16)),
+            const Text('Tips: Take with food for better absorption.', style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            const Text('Dosage History:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Expanded(
               child: ListView.builder(
                 itemCount: dosageHistory.length,
@@ -148,15 +136,15 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
                 },
               ),
             ),
-            SizedBox(height: 16),
-            Text('Storage Instructions:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Store in a cool, dry place away from direct sunlight.', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            const Text('Storage Instructions:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Store in a cool, dry place away from direct sunlight.', style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
             // Expiration Date Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Expiration Date:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text('Expiration Date:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(
                   onPressed: () => _selectExpirationDate(context),
                   child: Text(
@@ -168,20 +156,20 @@ class _MedicationDetailScreenState extends State<MedicationDetailScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: _handleSkip,
-                  child: Text('Skip', style: TextStyle(color: Colors.white)),
+                  child: const Text('Skip', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                 ),
                 ElevatedButton(
                   onPressed: _handleDone,
-                  child: Text('Done', style: TextStyle(color: Colors.white)),
+                  child: const Text('Done', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
@@ -200,9 +188,9 @@ class EditMedicationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Medication'),
+        title: const Text('Edit Medication'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Edit medication details here.'),
       ),
     );
