@@ -120,7 +120,7 @@ class SettingsPage extends StatelessWidget {
 
           // Contact Us button
           Container(
-            color: Colors.purple,
+            color: Colors.blue,
             width: double.infinity,
             child: TextButton(
               onPressed: () {
