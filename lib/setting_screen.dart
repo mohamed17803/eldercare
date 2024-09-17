@@ -86,7 +86,6 @@ class SettingsPage extends StatelessWidget {
                     // Navigate to Help section
                   },
                 ),
-
                 ListTile(
                   visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
                   leading: const Icon(Icons.logout),
