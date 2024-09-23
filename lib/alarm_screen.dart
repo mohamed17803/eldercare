@@ -135,7 +135,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             SliderButton(
               action: () async {
                 _timer?.cancel(); // Cancel the auto-dismiss timer
-                await Navigator.pushReplacementNamed(context, '/MedicationdetScreen');
+                await Navigator.pushReplacementNamed(context, '/Med icationdetScreen');
                 return true; // Return true to indicate successful slide action
               },
               label: const Text(
