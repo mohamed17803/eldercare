@@ -12,7 +12,20 @@
           "package_name": "com.example.eldercare"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "767590014974-uapu277f55kb1ad14m8k6kje3bvevql2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.eldercare",
+            "certificate_hash": "b11fce601e84a0d8250e239f12370780abb8e7b6"
+          }
+        },
+        {
+          "client_id": "767590014974-kbeggqfji74ub71e0cquhtbq9a0v2rb6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBiuSVEFRPC5h5VIDRhOxPqFklamGY1r_4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "767590014974-kbeggqfji74ub71e0cquhtbq9a0v2rb6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "767590014974-6u1pp1o7mbkhopupr5qeo6dr3deagkr7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eldercare"
+              }
+            }
+          ]
         }
       }
     }

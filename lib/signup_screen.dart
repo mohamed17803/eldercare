@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Ensure you have this package in your pubspec.yaml
 import 'login_screen.dart'; // Import the LoginPage
+import 'signup_verification_screen.dart'; // Import your verification screen
+import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -23,11 +26,82 @@ class _SignUpScreenState extends State<SignUpScreen> {
   DateTime? selectedDate;
   final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emergencyContactController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  String? _selectedGender;
+
+  // Firebase instances for authentication and Firestore
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void dispose() {
     _dateController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _emergencyContactController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  // Function to handle sign-up process
+  Future<void> _signUp() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showErrorDialog("Passwords do not match");
+      return;
+    }
+
+    try {
+      // Create a user with Firebase Auth
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Store additional user information in Firestore
+      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+        'dob': _dateController.text,
+        'gender': _selectedGender,
+        'emergency_contact': _emergencyContactController.text,
+      });
+
+      // Optionally send a verification email
+      await userCredential.user?.sendEmailVerification();
+
+      // Navigate to the Sign-Up Verification Screen after successful sign-up
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignUpVerificationScreen()),
+      );
+    } catch (e) {
+      _showErrorDialog(e.toString()); // Display error message
+    }
+  }
+
+  // Function to show error dialogs
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -76,22 +150,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
                             labelText: 'Name',
                             border: OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
                             labelText: 'Email',
                             border: OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _phoneController,
+                          decoration: const InputDecoration(
                             labelText: 'Phone number',
                             border: OutlineInputBorder(),
                           ),
@@ -131,26 +208,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: Text(value),
                             );
                           }).toList(),
-                          onChanged: (newValue) {},
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedGender = newValue;
+                            });
+                          },
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _emergencyContactController,
+                          decoration: const InputDecoration(
                             labelText: 'Emergency contact',
                             border: OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(
                             labelText: 'Password',
                             border: OutlineInputBorder(),
                           ),
                           obscureText: true,
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: _confirmPasswordController,
+                          decoration: const InputDecoration(
                             labelText: 'Confirm password',
                             border: OutlineInputBorder(),
                           ),
@@ -159,9 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(height: 32),
                         // Sign up button
                         ElevatedButton(
-                          onPressed: () {
-                            // Add sign-up logic
-                          },
+                          onPressed: _signUp, // Call the sign-up function
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(200, 50),
                             backgroundColor: const Color(0xFF6936F5),
