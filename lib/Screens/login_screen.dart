@@ -106,11 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Login',
+                    'Elderly Care',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontFamily: "Pacifico",
+                      fontSize: 38,
+                      fontFamily: "Pacifico", // Pacifico font for title
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF6936F5), // Updated color
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -133,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   // Login button
                   _isLoading // Show loading indicator
-                      ? CircularProgressIndicator()
+                      ? const CircularProgressIndicator()
                       : ElevatedButton(
                     onPressed: _login, // Call the login function
                     style: ElevatedButton.styleFrom(
@@ -148,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontFamily: "Pacifico",
+                        fontFamily: "Pacifico", // Pacifico font for button text
                       ),
                     ),
                   ),
@@ -157,26 +158,44 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
                       );
                     },
-                    child: const Text("Forgot Password?"),
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        fontFamily: "Pacifico", // Pacifico font for Forgot Password text
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('or sign in with'),
+                  const Text(
+                    'or sign in with',
+                    style: TextStyle(
+                      fontFamily: "Pacifico", // Pacifico font for 'or sign in with'
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.google),
+                        icon: const FaIcon(
+                          FontAwesomeIcons.google,
+                          color: Colors.red, // Set Google icon color to red
+                        ),
                         onPressed: () {
                           // Add Google Sign-In functionality here
                         },
                       ),
                       const SizedBox(width: 16),
                       IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.facebook),
+                        icon: const FaIcon(
+                          FontAwesomeIcons.facebook,
+                          color: Colors.blue, // Set Facebook icon color to blue
+                        ),
                         onPressed: () {
                           // Add Facebook Sign-In functionality here
                         },
@@ -184,14 +203,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
+                  const Text(
+                    "Don't have an account?", // Title text
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Pacifico", // Pacifico font for title
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Sign Up button (styled same as Login button)
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const SignupScreen()), // Navigate to SignupScreen
                       );
                     },
-                    child: const Text("Don't have an account? Sign up!"),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(200, 50),
+                      backgroundColor: const Color(0xFF6936F5), // Same color as Login button
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: "Pacifico", // Pacifico font for button text
+                      ),
+                    ),
                   ),
                 ],
               ),
