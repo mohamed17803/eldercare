@@ -51,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  // Function to handle sign-up process
+  // Function to handle sign-up process done by Mohamed Sayed
   Future<void> _signUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
       _showErrorDialog("Passwords do not match");

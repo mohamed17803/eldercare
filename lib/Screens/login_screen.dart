@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Sign in the user with Firebase Auth
+      // Sign in the user with Firebase Auth Done BY Mohamed Sayed
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
