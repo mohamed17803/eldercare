@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } catch (e) {
-      _showErrorDialog(e.toString()); // Display error message
+      _showErrorDialog(e.toString()); // Display error message Done by Mohamed Sayed
     } finally {
       setState(() {
         _isLoading = false; // Stop loading
