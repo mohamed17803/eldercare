@@ -1,4 +1,3 @@
-import 'package:eldercare/Screens/signup_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Import your generated Firebase options
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false, // Hide the debug banner
-      home: SignUpVerificationScreen(), // Set the SplashScreen as the home screen
+      home: SplashScreen(), // Set the SplashScreen as the home screen
     );
   }
 }
