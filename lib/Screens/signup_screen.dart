@@ -33,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   String? _selectedGender;
+  bool _isLoading = false; // Loading state variable
 
   // Firebase instances for authentication and Firestore
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -56,6 +57,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _showErrorDialog("Passwords do not match");
       return;
     }
+
+    // Simple email validation
+    if (!_emailController.text.contains('@')) {
+      _showErrorDialog("Please enter a valid email address");
+      return;
+    }
+
+    // Minimum password length validation
+    if (_passwordController.text.length < 6) {
+      _showErrorDialog("Password must be at least 6 characters");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // Start loading
+    });
 
     try {
       // Create a user with Firebase Auth
@@ -84,6 +101,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
     } catch (e) {
       _showErrorDialog(e.toString()); // Display error message
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
     }
   }
 
@@ -242,7 +263,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         const SizedBox(height: 32),
                         // Sign up button
-                        ElevatedButton(
+                        _isLoading // Show loading indicator
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
                           onPressed: _signUp, // Call the sign-up function
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(200, 50),

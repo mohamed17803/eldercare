@@ -60,6 +60,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Set the background color to white
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -72,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Image.asset('images/ec_logo.png'), // Replace with your asset image path
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 80),
             // Text animation (title)
             AnimatedBuilder(
               animation: _textAnimation,
