@@ -65,10 +65,7 @@ class HomeScreenContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        Text(
-          'Mon, 23 Nov',
-          style: TextStyle(fontSize: 18, color: Colors.black54),
-        ),
+
         // Add other widgets as needed for your Home screen content
       ],
     );
