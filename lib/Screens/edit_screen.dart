@@ -29,12 +29,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF6936F5)),
-          onPressed: () {
-            // You can implement a navigation back or pop action here if needed
-          },
-        ),
+        centerTitle: true,
         title: const Text(
           'New medication',
           style: TextStyle(
