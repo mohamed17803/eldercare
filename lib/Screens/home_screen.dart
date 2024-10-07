@@ -1,73 +1,75 @@
+import 'package:eldercare/Screens/edit_screen.dart';
 import 'package:flutter/material.dart';
+import 'medicationdet_screen.dart';
+import 'setting_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  // List of screens to navigate between
+  static const List<Widget> screens = <Widget>[
+    HomeScreenContent(), // A separate widget for the main home content
+    EditScreen(),
+    SettingsPage(),
+  ];
+
+  void _onItemtap(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Today\'s plan',
-            style: TextStyle(
-              fontSize: 22,
-                fontWeight: FontWeight.bold
-            )),
-        backgroundColor: Colors.white,
-
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Mon, 23 Nov',
-            style: TextStyle(fontSize: 18, color: Colors.black54),
+        title: const Text(
+          'Today\'s plan',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 16),
-          _buildMedicationItem('08:00', 'Omega 3', '1 pill once per day'),
-          _buildMedicationItem('12:00', 'Vitamin D', '2 pills once per week'),
-          _buildMedicationItem('12:00', 'Vitamin C', '1 pill once per day'),
-          _buildMedicationItem('19:00', 'Aspirin', '1 pill once per day'),
-          _buildMedicationItem('19:00', 'Aspirin', '1 pill once per day'),
-          _buildMedicationItem('19:00', 'Aspirin', '1 pill once per day'),
-
-        ],
+        ),
+        backgroundColor: Colors.white,
       ),
+      body: screens[_selectedIndex], // Display the selected screen
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Add medication'),
-          BottomNavigationBarItem(icon: Icon(Icons.medical_services), label: 'Medications'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
+        currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
+        onTap: _onItemtap,
       ),
     );
   }
+}
 
+// Separate widget for the Home tab's content
+class HomeScreenContent extends StatelessWidget {
+  const HomeScreenContent({super.key});
 
-  _buildMedicationItem(String time, String name, String description) {// Widget to display each medication item
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
         Text(
-          time,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          'Mon, 23 Nov',
+          style: TextStyle(fontSize: 18, color: Colors.black54),
         ),
-        Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: ListTile(
-            leading: const Icon(Icons.medication, size: 40, color: Colors.blue),
-            title: Text(name, style: const TextStyle(fontSize: 18)),
-            subtitle: Text(description),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-          ),
-        ),
+        // Add other widgets as needed for your Home screen content
       ],
     );
   }

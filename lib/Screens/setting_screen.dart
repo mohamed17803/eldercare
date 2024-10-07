@@ -1,5 +1,31 @@
 import 'package:flutter/material.dart';
 
+// Custom ListTile widget
+class CustomListTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const CustomListTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      visualDensity: const VisualDensity(vertical: 4),  // Make the tile taller
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: const Icon(Icons.arrow_forward_ios),
+      onTap: onTap,
+    );
+  }
+}
+
+// SettingsPage using CustomListTile
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -12,7 +38,6 @@ class SettingsPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           // Profile section
           const ListTile(
             visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
@@ -22,130 +47,70 @@ class SettingsPage extends StatelessWidget {
             title: Text('Jiya Malik'),
           ),
 
-
           // Settings options
           Expanded(
             child: ListView(
               children: [
-
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.language),
-                  title: const Text('Language'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.language,
+                  title: 'Language',
                   onTap: () {
                     // Navigate to Language settings
                   },
                 ),
-
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Notification'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.notifications,
+                  title: 'Notification',
                   onTap: () {
                     // Navigate to Notification settings
                   },
                 ),
-
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.info),
-                  title: const Text('About'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.info,
+                  title: 'About',
                   onTap: () {
                     // Navigate to About section
                   },
                 ),
-
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.help),
-                  title: const Text('Help'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.help,
+                  title: 'Help',
                   onTap: () {
                     // Navigate to Help section
                   },
                 ),
-
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),
-                  leading: const Icon(Icons.account_box),
-                  title: const Text('Mange Your account'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.account_box,
+                  title: 'Manage Your account',
                   onTap: () {
-                    // Navigate to Help section
+                    // Navigate to Account management
                   },
                 ),
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.contact_emergency),
-                  title: const Text('Emergency'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.contact_emergency,
+                  title: 'Emergency',
                   onTap: () {
-                    // Navigate to Help section
+                    // Navigate to Emergency settings
                   },
                 ),
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.logout),
-                  title: const Text('Logout'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.logout,
+                  title: 'Logout',
                   onTap: () {
-                    // Navigate to Help section
+                    // Navigate to Logout
                   },
                 ),
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.switch_access_shortcut),
-                  title: const Text('Switch Accounts'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                CustomListTile(
+                  icon: Icons.switch_access_shortcut,
+                  title: 'Switch Accounts',
                   onTap: () {
-                    // Navigate to Help section
-                  },
-                ),
-                ListTile(
-                  visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-                  leading: const Icon(Icons.share),
-                  title: const Text('Share Profile'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    // Navigate to Help section
+                    // Navigate to Switch Accounts
                   },
                 ),
               ],
             ),
           ),
-
-          // Contact Us button
-          Container(
-            color: Colors.blue,
-            width: double.infinity,
-            child: TextButton(
-              onPressed: () {
-                // Handle Contact Us button action
-              },
-              child: const Text(
-                'Contact Us , We Ready To Help You',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
-        items: const [
-
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Add medication'),
-          BottomNavigationBarItem(icon: Icon(Icons.medical_services), label: 'Medications'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }
