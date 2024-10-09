@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore integration
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import 'add_edit_med_screen.dart'; // Import the Add/Edit medication screen
+import 'medicationdet_screen.dart';
 import 'setting_screen.dart'; // Import Settings screen
 
 class HomeScreen extends StatefulWidget {
@@ -17,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // List of screens to navigate between
   static const List<Widget> screens = <Widget>[
     HomeScreenContent(), // Home Screen Content to display medications
-    EditScreen(), // Add/Edit Medication Screen
+    EditScreen(),
+    MedicationdetScreen(),// Add/Edit Medication Screen
     SettingsPage(), // Settings Screen
   ];
 
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Add medication'),
+          BottomNavigationBarItem(icon: Icon(Icons.medication), label: 'Medication'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
