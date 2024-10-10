@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'login_screen.dart';
 
 // Custom ListTile widget
@@ -71,21 +70,21 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.info,
                   title: 'About',
                   onTap: () {
-                    // Navigate to About section
+
                   },
                 ),
                 CustomListTile(
                   icon: Icons.help,
                   title: 'Help',
                   onTap: () {
-                    // Navigate to Help section
+
                   },
                 ),
                 CustomListTile(
                   icon: Icons.account_box,
                   title: 'Manage Your account',
                   onTap: () {
-                    // Navigate to Account management
+
                   },
                 ),
                 CustomListTile(
