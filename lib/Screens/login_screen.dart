@@ -63,7 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } catch (e) {
-      _showErrorDialog(e.toString()); // Display error message Done by Mohamed Sayed
+      _showErrorDialog(
+          e.toString()); // Display error message Done by Mohamed Sayed
     } finally {
       setState(() {
         _isLoading = false; // Stop loading
@@ -136,23 +137,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   _isLoading // Show loading indicator
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
-                    onPressed: _login, // Call the login function
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(200, 50),
-                      backgroundColor: const Color(0xFF6936F5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontFamily: "Pacifico", // Pacifico font for button text
-                      ),
-                    ),
-                  ),
+                          onPressed: _login, // Call the login function
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(200, 50),
+                            backgroundColor: const Color(0xFF6936F5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily:
+                                  "Pacifico", // Pacifico font for button text
+                            ),
+                          ),
+                        ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
@@ -160,13 +162,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
+                                const UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
                       );
                     },
                     child: const Text(
                       "Forgot Password?",
                       style: TextStyle(
-                        fontFamily: "Pacifico", // Pacifico font for Forgot Password text
+                        fontFamily:
+                            "Pacifico", // Pacifico font for Forgot Password text
                       ),
                     ),
                   ),
@@ -174,7 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'or sign in with',
                     style: TextStyle(
-                      fontFamily: "Pacifico", // Pacifico font for 'or sign in with'
+                      fontFamily:
+                          "Pacifico", // Pacifico font for 'or sign in with'
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -216,12 +220,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SignupScreen()), // Navigate to SignupScreen
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SignupScreen()), // Navigate to SignupScreen
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(200, 50),
-                      backgroundColor: const Color(0xFF6936F5), // Same color as Login button
+                      backgroundColor: const Color(0xFF6936F5),
+                      // Same color as Login button
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'login_screen.dart';
+
 // Custom ListTile widget
 class CustomListTile extends StatelessWidget {
   final IconData icon;
@@ -97,7 +99,7 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Logout',
                   onTap: () {
-                    // Navigate to Logout
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginPage()));
                   },
                 ),
                 CustomListTile(
