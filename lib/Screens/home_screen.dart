@@ -1,10 +1,11 @@
 import 'package:eldercare/Screens/progress_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore integration
-import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
-import 'add_edit_med_screen.dart'; // Import the Add/Edit medication screen
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'add_edit_med_screen.dart';
+import 'login_screen.dart';
 import 'medicationdet_screen.dart';
-import 'setting_screen.dart'; // Import Settings screen
+import 'setting_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,14 +17,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // List of screens to navigate between
   static const List<Widget> screens = <Widget>[
-    HomeScreenContent(),
-    historyScreen(),// Home Screen Content to display medications
+    HomeScreenContent(),  // Ensure HomeScreenContent is included here
+    historyScreen(),
     EditScreen(),
 
-    MedicationdetScreen(),// Add/Edit Medication Screen
-    SettingsPage(), // Settings Screen
+    SettingsPage(),
   ];
 
   void _onItemtap(int index) {
@@ -45,13 +44,64 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.white,
       ),
-      body: screens[_selectedIndex], // Display the selected screen
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Eldercare Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                // Add navigation to Profile screen or any action
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications),
+              title: const Text('Notifications'),
+              onTap: () {
+                // Add navigation to Notifications screen or any action
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text('Help'),
+              onTap: () {
+                // Add navigation to Help screen or any action
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
           BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Add medication'),
-          BottomNavigationBarItem(icon: Icon(Icons.medication), label: 'Medication'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
@@ -64,34 +114,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Separate widget for the Home tab's content
 class HomeScreenContent extends StatelessWidget {
   const HomeScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Fetch medications from Firestore for the current user
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('medications')
-          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid) // Query by current user ID
-          .snapshots(), // Listen for real-time updates
+          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Something went wrong'));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator()); // Show loading spinner while fetching data
+          return const Center(child: CircularProgressIndicator());
         }
 
-        // Fetch medication documents
         final medications = snapshot.data!.docs;
 
         if (medications.isEmpty) {
           return const Center(child: Text('No medications added yet.'));
         }
 
-        // Display medications as a list of rectangular cards
         return ListView.builder(
           itemCount: medications.length,
           padding: const EdgeInsets.all(16),
@@ -109,7 +155,6 @@ class HomeScreenContent extends StatelessWidget {
   }
 }
 
-// A custom widget for displaying a medication card
 class MedicationCard extends StatelessWidget {
   final String medicationName;
   final String dosageValue;
@@ -136,7 +181,7 @@ class MedicationCard extends StatelessWidget {
         subtitle: Text('Dosage: $dosageValue $dosageUnit'),
         trailing: ElevatedButton(
           onPressed: () {
-            // Implement button action here, such as viewing medication details
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const MedicationdetScreen()));
           },
           child: const Text('Details'),
         ),
