@@ -60,7 +60,7 @@ class _MissedAlarmScreenState extends State<MissedAlarmScreen> {
                 color: Colors.white, // Same font color
               ),
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 40), //STILL
             // Placeholder for any additional UI elements
           ],
         ),
