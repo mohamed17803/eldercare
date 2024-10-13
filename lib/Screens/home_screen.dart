@@ -6,6 +6,7 @@ import 'add_edit_med_screen.dart';
 import 'login_screen.dart';
 import 'medicationdet_screen.dart';
 import 'setting_screen.dart';
+import 'history_screen.dart'; // Ensure you import your history screen here
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,9 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> screens = <Widget>[
     HomeScreenContent(),  // Ensure HomeScreenContent is included here
-    historyScreen(),
+    HistoryScreen(),  // Make sure this points to the correct HistoryScreen widget
     EditScreen(),
-
     SettingsPage(),
   ];
 
@@ -144,6 +144,7 @@ class HomeScreenContent extends StatelessWidget {
           itemBuilder: (context, index) {
             var medication = medications[index];
             return MedicationCard(
+              medicationId: medication.id, // Pass the medication ID here
               medicationName: medication['medication_name'],
               dosageValue: medication['dosage']['value'].toString(),
               dosageUnit: medication['dosage']['unit'],
@@ -156,12 +157,14 @@ class HomeScreenContent extends StatelessWidget {
 }
 
 class MedicationCard extends StatelessWidget {
+  final String medicationId; // Added medication ID
   final String medicationName;
   final String dosageValue;
   final String dosageUnit;
 
   const MedicationCard({
     Key? key,
+    required this.medicationId, // Accept medication ID
     required this.medicationName,
     required this.dosageValue,
     required this.dosageUnit,
@@ -181,7 +184,12 @@ class MedicationCard extends StatelessWidget {
         subtitle: Text('Dosage: $dosageValue $dosageUnit'),
         trailing: ElevatedButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>const MedicationdetScreen()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MedicationDetailsScreen(medicationId: medicationId), // Pass medication ID
+              ),
+            );
           },
           child: const Text('Details'),
         ),

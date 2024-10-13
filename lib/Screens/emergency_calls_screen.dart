@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EmergencyCallsScreen extends StatefulWidget {
   const EmergencyCallsScreen({super.key});
@@ -8,60 +8,51 @@ class EmergencyCallsScreen extends StatefulWidget {
   @override
   _EmergencyCallsScreenState createState() => _EmergencyCallsScreenState();
 }
-
 class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
-  TwilioFlutter? twilioFlutter;
+  String emergencyContactNumber = '';
+  bool isCalling = false; // Track if a call is in progress
 
   @override
   void initState() {
     super.initState();
-    twilioFlutter = TwilioFlutter(
-      accountSid: 'YOUR_ACCOUNT_SID',
-      authToken: 'YOUR_AUTH_TOKEN',
-      twilioNumber: 'YOUR_TWILIO_NUMBER',
-    );
-    _handleEmergencyContact();
+    _fetchEmergencyContact();
   }
 
-  void _handleEmergencyContact() async {
-    bool callAnswered = await simulateCall(); // Simulate call response
+  Future<void> _fetchEmergencyContact() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return; // Exit if user is not authenticated
 
-    if (callAnswered) {
-      _updateFirestore('taken', 'phone_called', 'alarmed');
-    } else {
-      await twilioFlutter?.sendSMS(
-        toNumber: 'EMERGENCY_CONTACT_NUMBER', // Replace with actual emergency contact number
-        messageBody: 'Emergency Alert: Medication not taken!',
-      );
-      _updateFirestore('not_taken', 'missed', 'sms_sent');
+    // Fetch the emergency contact number for the user from Firestore
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('emergency_contacts')
+          .where('user_id', isEqualTo: user.uid) // Fetch contact for the logged-in user
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        emergencyContactNumber = snapshot.docs.first['contact_number'];
+        // Set isCalling to true to indicate that a call is being handled
+        setState(() {
+          isCalling = true;
+        });
+      } else {
+        print('No emergency contact found for this user.');
+      }
+    } catch (e) {
+      print("Error fetching emergency contact: $e");
     }
-
-    Navigator.pushReplacementNamed(context, '/DosagesHistoryScreen');
-  }
-
-  Future<bool> simulateCall() async {
-    await Future.delayed(Duration(seconds: 3)); // Simulate delay
-    return true; // Simulate call answered
-  }
-
-  void _updateFirestore(String action1, String action2, String action3) {
-    FirebaseFirestore.instance.collection('dosage_history').add({
-      'action1': action1,
-      'action2': action2,
-      'action3': action3,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFF6936F5), // Same background color
+    return Scaffold(
+      backgroundColor: const Color(0xFF6936F5), // Same background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'Emergency Call Status',
               style: TextStyle(
                 fontFamily: 'Pacifico',
@@ -69,16 +60,27 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
                 color: Colors.white, // Same font color
               ),
             ),
-            SizedBox(height: 20),
-            Text(
-              'Handling Emergency Contact...',
-              style: TextStyle(
-                fontFamily: 'Pacifico',
-                fontSize: 20,
-                color: Colors.white, // Same font color
+            const SizedBox(height: 20),
+            if (isCalling) ...[
+              Text(
+                'Calling $emergencyContactNumber...',
+                style: const TextStyle(
+                  fontFamily: 'Pacifico',
+                  fontSize: 20,
+                  color: Colors.white, // Same font color
+                ),
               ),
-            ),
-            SizedBox(height: 40),
+            ] else ...[
+              const Text(
+                'No emergency contact found.',
+                style: TextStyle(
+                  fontFamily: 'Pacifico',
+                  fontSize: 20,
+                  color: Colors.white, // Same font color
+                ),
+              ),
+            ],
+            const SizedBox(height: 40),
             // Placeholder for any additional UI elements
           ],
         ),
@@ -86,4 +88,3 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
     );
   }
 }
-//still

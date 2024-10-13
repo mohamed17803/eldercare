@@ -51,22 +51,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  // Function to handle sign-up process done by Mohamed Sayed
+  // Function to handle sign-up process
   Future<void> _signUp() async {
+    // Validate fields are not empty
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        _emergencyContactController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      _showErrorDialog("All fields must be filled out.");
+      return;
+    }
+
+    // Check if emergency contact is the same as the user's phone number
+    if (_phoneController.text == _emergencyContactController.text) {
+      _showErrorDialog("Emergency contact cannot be the same as your phone number.");
+      return;
+    }
+
+    // Password match validation
     if (_passwordController.text != _confirmPasswordController.text) {
-      _showErrorDialog("Passwords do not match");
+      _showErrorDialog("Passwords do not match.");
       return;
     }
 
     // Simple email validation
     if (!_emailController.text.contains('@')) {
-      _showErrorDialog("Please enter a valid email address");
+      _showErrorDialog("Please enter a valid email address.");
       return;
     }
 
     // Minimum password length validation
     if (_passwordController.text.length < 6) {
-      _showErrorDialog("Password must be at least 6 characters");
+      _showErrorDialog("Password must be at least 6 characters.");
       return;
     }
 

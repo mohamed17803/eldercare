@@ -40,7 +40,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'New medication',
+          'New Medication',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -83,13 +83,13 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             ElevatedButton(
               onPressed: _isLoading ? null : _addMedication, // Handle medication submission
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6936F5),
-                minimumSize: Size(double.infinity, 50),
+                backgroundColor: const Color(0xFF6936F5),
+                minimumSize: const Size(double.infinity, 50),
               ),
               child: _isLoading
-                  ? CircularProgressIndicator(color: Colors.white)
+                  ? const CircularProgressIndicator(color: Colors.white)
                   : const Text(
-                'Add medication',
+                'Add Medication',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -175,7 +175,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Color(0xFFF4F3F3),
+                  color: const Color(0xFFF4F3F3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(time, style: const TextStyle(fontSize: 16)),
@@ -216,7 +216,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Color(0xFFF4F3F3),
+              color: const Color(0xFFF4F3F3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -242,7 +242,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Color(0xFFF4F3F3),
+            color: const Color(0xFFF4F3F3),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
@@ -274,7 +274,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
   Future<void> _selectTime(String currentTime) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: 8, minute: 0),
+      initialTime: const TimeOfDay(hour: 8, minute: 0),
     );
     if (pickedTime != null) {
       setState(() {
@@ -288,7 +288,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
   Future<void> _addMedication() async {
     if (_medicineController.text.isEmpty || _selectedStartDate == null) {
       // Show an error message if required fields are empty
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill out all fields')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill out all fields')));
       return;
     }
 
@@ -316,9 +316,17 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         'progress_line': '0/${_timesPerDay.length * _getDurationInDays()}',
         'start_date': _selectedStartDate,
         'duration': _getDurationInDays(),
-        'created_at': DateTime.now(),
-        'notes': 'Take with food if needed.',
+        'created_at': DateTime.now(), // Ensure created_at is set
+        'notes': 'Take with food if needed.', // Allow users to edit this
       });
+
+      // Show a SnackBar to inform the user that the medication has been added
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Medication added and alarm set!'),
+          duration: Duration(seconds: 3), // Set the SnackBar to appear for 3 seconds
+        ),
+      );
 
       // Navigate to the HomeScreen after medication is added
       Navigator.pushReplacement(
@@ -335,51 +343,28 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     }
   }
 
-  // Generates the schedule based on start date, times per day, and duration
+  // Helper function to calculate the duration in days from the selected duration
+  int _getDurationInDays() {
+    if (_selectedDuration == '3 days') return 3;
+    if (_selectedDuration == '1 week') return 7;
+    if (_selectedDuration == '2 weeks') return 14;
+    if (_selectedDuration == '3 weeks') return 21;
+    if (_selectedDuration == '1 month') return 30;
+    return 0;
+  }
+
+  // Generates a schedule for the medication based on the times per day and start date
   List<Map<String, dynamic>> _generateSchedule() {
     List<Map<String, dynamic>> schedule = [];
-    int durationDays = _getDurationInDays();
-
-    for (int i = 0; i < durationDays; i++) {
-      DateTime currentDay = _selectedStartDate!.add(Duration(days: i)); // Calculate the current day
-
+    for (int i = 0; i < _getDurationInDays(); i++) {
       for (String time in _timesPerDay) {
-        // Add a new entry to the schedule for each time per day
         schedule.add({
-          'timestamp': DateTime(
-              currentDay.year,
-              currentDay.month,
-              currentDay.day,
-              TimeOfDay(hour: int.parse(time.split(':')[0]), minute: int.parse(time.split(':')[1].split(' ')[0]))
-                  .hour,
-              TimeOfDay(hour: int.parse(time.split(':')[0]), minute: int.parse(time.split(':')[1].split(' ')[0]))
-                  .minute),
-          'scheduled_status': 'pending', // Default status for new dosages
-          'actions': {
-            'alarmed': false, // Default action values
-            'phone_called': false,
-            'sms_sent': false,
-          },
+          'date': _selectedStartDate!.add(Duration(days: i)),
+          'time': time,
+          'taken': false, // Mark the medication as not yet taken
         });
       }
     }
-
-    return schedule; // Return the generated schedule
-  }
-
-  // Converts the selected duration into the number of days
-  int _getDurationInDays() {
-    switch (_selectedDuration) {
-      case '1 week':
-        return 7;
-      case '2 weeks':
-        return 14;
-      case '3 weeks':
-        return 21;
-      case '1 month':
-        return 30;
-      default:
-        return 3; // Default to 3 days if no other option is selected
-    }
+    return schedule;
   }
 }

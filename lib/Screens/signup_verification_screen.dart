@@ -14,7 +14,7 @@ class SignUpVerificationScreen extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             // Logo
-            Positioned(
+            const Positioned(
               top: 50, // Adjust the position of the logo
               child: HeartLogo(),
             ),
@@ -26,8 +26,8 @@ class SignUpVerificationScreen extends StatelessWidget {
                 SizedBox(height: 200), // Add space to position the texts below the logo
 
                 // Welcome Text
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0), // Adjust padding
+                const Padding(
+                  padding: EdgeInsets.only(top: 16.0, bottom: 16.0), // Adjust padding
                   child: Text(
                     'Welcome',
                     style: TextStyle(
@@ -40,8 +40,8 @@ class SignUpVerificationScreen extends StatelessWidget {
                 ),
 
                 // Sign Up Completed Text
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 24.0), // Adjust padding to lower the text
+                const Padding(
+                  padding: EdgeInsets.only(top: 16.0, bottom: 24.0), // Adjust padding to lower the text
                   child: Text(
                     'Sign Up Completed!',
                     style: TextStyle(
@@ -65,7 +65,7 @@ class SignUpVerificationScreen extends StatelessWidget {
                     backgroundColor: const Color(0xFF6936F5), // Set button color
                     padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), // Increase button size
                   ),
-                  child: Text(
+                  child: const Text(
                     'Go to Login Page',
                     style: TextStyle(
                       color: Colors.white, // Set text color to white
