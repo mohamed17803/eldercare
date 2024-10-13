@@ -1,3 +1,4 @@
+import 'package:eldercare/Screens/profile_screen.dart';
 import 'package:eldercare/Screens/progress_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -64,6 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
+                  ),
+                );
                 // Add navigation to Profile screen or any action
               },
             ),
