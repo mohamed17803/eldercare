@@ -1,11 +1,10 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'dart:async';
 import 'package:volume_control/volume_control.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:intl/intl.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
@@ -17,20 +16,12 @@ class AlarmScreen extends StatefulWidget {
 class _AlarmScreenState extends State<AlarmScreen> {
   Timer? _timer;
   late DateTime _currentTime;
-  late AudioPlayer _audioPlayer;
   late StreamSubscription<QuerySnapshot> _subscription;
-  TwilioFlutter? twilioFlutter;
 
   @override
   void initState() {
     super.initState();
     _currentTime = DateTime.now();
-    _audioPlayer = AudioPlayer();
-    twilioFlutter = TwilioFlutter(
-      accountSid: 'YOUR_ACCOUNT_SID',
-      authToken: 'YOUR_AUTH_TOKEN',
-      twilioNumber: 'YOUR_TWILIO_NUMBER',
-    );
     _setMaxVolume();
     _startClock();
     _subscribeToAlarms();
@@ -49,15 +40,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
         .collection('medications')
         .snapshots()
         .listen((QuerySnapshot snapshot) {
-      print('Medications snapshot received with ${snapshot.docs.length} documents');
       for (var doc in snapshot.docs) {
         var schedule = doc['schedule'] as List<dynamic>;
         for (var entry in schedule) {
           var alarmTime = (entry['timestamp'] as Timestamp).toDate();
-          print('Checking alarm time: $alarmTime');
           if (alarmTime.isBefore(_currentTime.add(const Duration(minutes: 1))) &&
               alarmTime.isAfter(_currentTime.subtract(const Duration(minutes: 1)))) {
-            print('Playing alarm for document: ${doc.id}');
             _playAlarmSound(doc, entry);
           }
         }
@@ -69,10 +57,17 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   void _playAlarmSound(DocumentSnapshot doc, dynamic entry) async {
     try {
-      await _audioPlayer.setSource(AssetSource('assets/medication.mp3'));
-      await _audioPlayer.resume();
-      Timer(Duration(seconds: 30), () {
-        _audioPlayer.stop();
+      FlutterRingtonePlayer.play(
+        android: AndroidSounds.alarm,
+        ios: IosSounds.alarm,
+        looping: true,
+        volume: 1.0,
+        asAlarm: true,
+      );
+
+      // Start a timer to handle missed alarm
+      Timer(const Duration(seconds: 30), () {
+        // If the alarm is not canceled within 30 seconds
         _triggerEmergencyCall(doc, entry);
       });
     } catch (e) {
@@ -81,16 +76,16 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   void _triggerEmergencyCall(DocumentSnapshot doc, dynamic entry) async {
-    // Update the Firestore document to reflect the missed alarm
+    // Update Firestore document for missed alarm
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot freshDoc = await transaction.get(doc.reference);
       var updatedSchedule = freshDoc['schedule'] as List<dynamic>;
       var updatedEntry = updatedSchedule.firstWhere((e) => e['timestamp'] == entry['timestamp']);
       updatedEntry['actions']['alarmed'] = true;
-      updatedEntry['actions']['phone_called'] = true; // Or false, depending on logic
-      updatedEntry['actions']['sms_sent'] = true; // Or false, depending on logic
       transaction.update(freshDoc.reference, {'schedule': updatedSchedule});
     });
+
+    // Navigate to Missed Alarm Screen
     Navigator.pushReplacementNamed(context, '/MissedAlarmScreen', arguments: doc.id);
   }
 
@@ -103,8 +98,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    FlutterRingtonePlayer.stop();
     _subscription.cancel();
     super.dispose();
   }
@@ -147,7 +141,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
             const SizedBox(height: 20),
             SliderButton(
               action: () async {
-                _timer?.cancel();
+                FlutterRingtonePlayer.stop();
+                // Navigate to Medication Detail Screen
                 await Navigator.pushReplacementNamed(context, '/MedicationdetScreen');
                 return true;
               },
@@ -176,4 +171,3 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 }
-// Still Trying
