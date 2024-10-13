@@ -24,8 +24,6 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
   }
 
   Future<void> _fetchMedicationDetails() async {
-    String userId = FirebaseAuth.instance.currentUser!.uid; // Get the logged-in user's UID
-
     try {
       DocumentSnapshot doc = await _firestore.collection('medications')
           .doc(widget.medicationId) // Fetch the medication document by ID
@@ -37,11 +35,13 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
         });
       } else {
         // Handle the case where the document does not exist
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Medication not found.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Medication not found.')));
       }
     } catch (e) {
       // Handle errors appropriately
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching medication details: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching medication details: $e')));
     }
   }
 
@@ -64,7 +64,7 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Medication Details'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.purple[800], // Changed to a darker purple
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -82,7 +82,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                   children: [
                     Text(
                       'Medication Name',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -92,7 +94,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Dosage',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -102,7 +106,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Schedule',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -112,7 +118,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Total Dosage',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -122,7 +130,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Progress Count',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -132,13 +142,15 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Progress Line',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.grey,
-                      color: Colors.blue,
+                      color: Colors.purple[700], // Changed to a darker purple
                       minHeight: 10,
                     ),
                     const SizedBox(height: 10),
@@ -149,7 +161,9 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Notes',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                      style: TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800]), // Changed to a darker purple
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -157,7 +171,6 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                       style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: 20),
-                    // This is where you could implement the functionality to skip or mark as done, if needed
                   ],
                 ),
               ),
@@ -169,15 +182,17 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
   }
 
   String _formatSchedule(List<dynamic>? schedule) {
-    if (schedule == null) {
+    if (schedule == null || schedule.isEmpty) {
       return 'N/A';
     }
+
     return schedule.map((s) {
       if (s['timestamp'] != null && s['timestamp'] is Timestamp) {
-        return DateFormat('yyyy-MM-dd HH:mm').format((s['timestamp'] as Timestamp).toDate());
+        return DateFormat('yyyy-MM-dd HH:mm').format(
+            (s['timestamp'] as Timestamp).toDate());
       } else {
         return 'Invalid date';
       }
-    }).join(', ');
+    }).toList().join(', ');
   }
 }

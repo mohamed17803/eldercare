@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
               onTap: () {
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ProfileScreen(),
                   ),
@@ -125,10 +125,22 @@ class HomeScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    // Check if currentUser is null, meaning no user is logged in
+    if (currentUser == null) {
+      return const Center(
+        child: Text(
+          'User not logged in',
+          style: TextStyle(fontSize: 18),
+        ),
+      );
+    }
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('medications')
-          .where('user_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('user_id', isEqualTo: currentUser.uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -150,7 +162,7 @@ class HomeScreenContent extends StatelessWidget {
           itemBuilder: (context, index) {
             var medication = medications[index];
             return MedicationCard(
-              medicationId: medication.id, // Pass the medication ID here
+              medicationId: medication.id,
               medicationName: medication['medication_name'],
               dosageValue: medication['dosage']['value'].toString(),
               dosageUnit: medication['dosage']['unit'],
@@ -161,6 +173,7 @@ class HomeScreenContent extends StatelessWidget {
     );
   }
 }
+
 
 class MedicationCard extends StatelessWidget {
   final String medicationId; // Added medication ID
