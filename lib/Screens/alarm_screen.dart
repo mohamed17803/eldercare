@@ -17,6 +17,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Timer? _timer;
   late DateTime _currentTime;
   late StreamSubscription<QuerySnapshot> _subscription;
+  final FlutterRingtonePlayer _ringtonePlayer = FlutterRingtonePlayer(); // Create an instance
 
   @override
   void initState() {
@@ -27,14 +28,21 @@ class _AlarmScreenState extends State<AlarmScreen> {
     _subscribeToAlarms();
   }
 
+  // Set the device volume to maximum
   void _setMaxVolume() async {
-    await VolumeControl.setVolume(1.0);
+    try {
+      await VolumeControl.setVolume(1.0);
+    } catch (e) {
+      print('Error setting volume: $e');
+    }
   }
 
+  // Start a timer to update the current time every second
   void _startClock() {
-    Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
   }
 
+  // Subscribe to Firestore to listen for medication alarms
   void _subscribeToAlarms() {
     _subscription = FirebaseFirestore.instance
         .collection('medications')
@@ -55,9 +63,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
     });
   }
 
+  // Play the alarm sound
   void _playAlarmSound(DocumentSnapshot doc, dynamic entry) async {
     try {
-      FlutterRingtonePlayer.play(
+      _ringtonePlayer.play(
         android: AndroidSounds.alarm,
         ios: IosSounds.alarm,
         looping: true,
@@ -75,20 +84,26 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
   }
 
+  // Trigger an emergency call if the alarm is missed
   void _triggerEmergencyCall(DocumentSnapshot doc, dynamic entry) async {
-    // Update Firestore document for missed alarm
-    FirebaseFirestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot freshDoc = await transaction.get(doc.reference);
-      var updatedSchedule = freshDoc['schedule'] as List<dynamic>;
-      var updatedEntry = updatedSchedule.firstWhere((e) => e['timestamp'] == entry['timestamp']);
-      updatedEntry['actions']['alarmed'] = true;
-      transaction.update(freshDoc.reference, {'schedule': updatedSchedule});
-    });
+    try {
+      // Update Firestore document for missed alarm
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot freshDoc = await transaction.get(doc.reference);
+        var updatedSchedule = freshDoc['schedule'] as List<dynamic>;
+        var updatedEntry = updatedSchedule.firstWhere((e) => e['timestamp'] == entry['timestamp']);
+        updatedEntry['actions']['alarmed'] = true;
+        transaction.update(freshDoc.reference, {'schedule': updatedSchedule});
+      });
 
-    // Navigate to Missed Alarm Screen
-    Navigator.pushReplacementNamed(context, '/MissedAlarmScreen', arguments: doc.id);
+      // Navigate to Missed Alarm Screen
+      Navigator.pushReplacementNamed(context, '/MissedAlarmScreen', arguments: doc.id);
+    } catch (e) {
+      print('Error triggering emergency call: $e');
+    }
   }
 
+  // Update the current time
   void _updateTime() {
     setState(() {
       _currentTime = DateTime.now();
@@ -98,7 +113,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    FlutterRingtonePlayer.stop();
+    _ringtonePlayer.stop();
     _subscription.cancel();
     super.dispose();
   }
@@ -141,7 +156,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             const SizedBox(height: 20),
             SliderButton(
               action: () async {
-                FlutterRingtonePlayer.stop();
+                _ringtonePlayer.stop();
                 // Navigate to Medication Detail Screen
                 await Navigator.pushReplacementNamed(context, '/MedicationdetScreen');
                 return true;
