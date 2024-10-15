@@ -65,6 +65,7 @@
         <!-- Add AlarmService to run the alarm -->
         <service
             android:name=".AlarmService"
+            android:enabled="true"
             android:exported="false"
             android:permission="android.permission.FOREGROUND_SERVICE" />
 
@@ -77,5 +78,4 @@
             <data android:mimeType="text/plain" />
         </intent>
     </queries>
-
 </manifest>
