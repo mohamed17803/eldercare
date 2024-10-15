@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore integration
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 
 // Custom ListTile widget
 class CustomListTile extends StatelessWidget {
@@ -18,34 +19,62 @@ class CustomListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       visualDensity: const VisualDensity(vertical: 4),  // Make the tile taller
-      leading: Icon(icon),
-      title: Text(title),
-      trailing: const Icon(Icons.arrow_forward_ios),
+      leading: Icon(icon, color: const Color(0xFF6936F5)), // Set icon color
+      title: Text(title, style: const TextStyle(color: Color(0xFF6936F5))), // Set text color
+      trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xFF6936F5)), // Set trailing icon color
       onTap: onTap,
     );
   }
 }
 
 // SettingsPage using CustomListTile
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String userName = 'User';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['name'] ?? 'User';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Settings', style: TextStyle(color: Color(0xFF6936F5))),
+        backgroundColor: Colors.white,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Profile section
-          const ListTile(
-            visualDensity: VisualDensity(vertical: 4),  // Make the tile taller
-            leading: CircleAvatar(
+          ListTile(
+            visualDensity: const VisualDensity(vertical: 4),  // Make the tile taller
+            leading: const CircleAvatar(
               backgroundImage: AssetImage('images/elderly.png'), // Add your own profile image
             ),
-            title: Text('Jiya Malik'),
+            title: Text(userName, style: const TextStyle(color: Color(0xFF6936F5))), // Display user's name
           ),
 
           // Settings options
@@ -67,24 +96,10 @@ class SettingsPage extends StatelessWidget {
                   },
                 ),
                 CustomListTile(
-                  icon: Icons.info,
-                  title: 'About',
-                  onTap: () {
-
-                  },
-                ),
-                CustomListTile(
-                  icon: Icons.help,
-                  title: 'Help',
-                  onTap: () {
-
-                  },
-                ),
-                CustomListTile(
                   icon: Icons.account_box,
                   title: 'Manage Your account',
                   onTap: () {
-
+                    // Navigate to Manage Your account
                   },
                 ),
                 CustomListTile(
@@ -92,20 +107,6 @@ class SettingsPage extends StatelessWidget {
                   title: 'Emergency',
                   onTap: () {
                     // Navigate to Emergency settings
-                  },
-                ),
-                CustomListTile(
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginPage()));
-                  },
-                ),
-                CustomListTile(
-                  icon: Icons.switch_access_shortcut,
-                  title: 'Switch Accounts',
-                  onTap: () {
-                    // Navigate to Switch Accounts
                   },
                 ),
               ],
