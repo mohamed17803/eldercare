@@ -22,19 +22,26 @@ class NewMedicationScreen extends StatefulWidget {
 
 class _NewMedicationScreenState extends State<NewMedicationScreen> {
   final TextEditingController _medicineController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController(); // New controller for duration
   String _selectedDosageValue = '1'; // Stores the dosage amount
   String _selectedDosageUnit = 'pill'; // Stores the dosage unit
   DateTime? _selectedStartDate; // Stores the start date of medication
-  String _selectedDuration = '3 days'; // Stores the duration of medication
-  List<String> _timesPerDay = ['08:00 AM']; // Allows the user to select multiple times per day
+  List<String> _timesPerDay = []; // Changed to start empty
   bool _isLoading = false; // Tracks if the form is being submitted
 
   // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
+  void initState() {
+    super.initState();
+    _timesPerDay.add('08:00 AM'); // Add default time to the list
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF6936F5), // Set the full background color
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -42,7 +49,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
         title: const Text(
           'New Medication',
           style: TextStyle(
-            color: Colors.black,
+            color: Color(0xFF6936F5), // Set the text title color
             fontWeight: FontWeight.bold,
             fontSize: 27,
           ),
@@ -64,16 +71,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
                         _selectedStartDate = pickedDate; // Set the selected start date
                       });
                     }),
-                    buildDropdownField(
-                      'Duration',
-                      _selectedDuration,
-                      ['3 days', '1 week', '2 weeks', '3 weeks', '1 month'],
-                          (value) {
-                        setState(() {
-                          _selectedDuration = value!; // Update selected duration
-                        });
-                      },
-                    ),
+                    buildDurationField(), // Updated field for duration
                     buildTimePickerField(), // Field to select times per day
                     const SizedBox(height: 20),
                   ],
@@ -83,15 +81,15 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             ElevatedButton(
               onPressed: _isLoading ? null : _addMedication, // Handle medication submission
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6936F5),
+                backgroundColor: Colors.white, // Set button background color to white
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const CircularProgressIndicator(color: Color(0xFF6936F5))
                   : const Text(
                 'Add Medication',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF6936F5), // Set button text color
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -108,18 +106,19 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFFF4F3F3),
+            fillColor: Colors.white, // Set field color to white
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
           ),
+          style: const TextStyle(color: Color(0xFF6936F5)), // Set text color
         ),
         const SizedBox(height: 30),
       ],
@@ -159,12 +158,37 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     );
   }
 
+  // New method for duration input field
+  Widget buildDurationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Duration (1-60 days)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _durationController,
+          keyboardType: TextInputType.number, // Only accept numbers
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white, // Set field color to white
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(color: Color(0xFF6936F5)), // Set text color
+        ),
+        const SizedBox(height: 30),
+      ],
+    );
+  }
+
   // Builds the field to allow selecting times per day for the medication
   Widget buildTimePickerField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Times Per Day', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const Text('Times Per Day', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
         const SizedBox(height: 8),
         Column(
           children: _timesPerDay
@@ -175,10 +199,10 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF4F3F3),
+                  color: Colors.white, // Set field color to white
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(time, style: const TextStyle(fontSize: 16)),
+                child: Text(time, style: const TextStyle(fontSize: 16, color: Color(0xFF6936F5))),
               ),
             ),
           ))
@@ -198,7 +222,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
         const SizedBox(height: 8),
         GestureDetector(
           onTap: () async {
@@ -216,14 +240,14 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: const Color(0xFFF4F3F3),
+              color: Colors.white, // Set field color to white
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               selectedDate != null
                   ? DateFormat('dd/MM/yyyy').format(selectedDate)
                   : 'Select Date',
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
+              style: const TextStyle(fontSize: 16, color: Color(0xFF6936F5)),
             ),
           ),
         ),
@@ -237,12 +261,12 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFFF4F3F3),
+            color: Colors.white, // Set field color to white
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
@@ -252,7 +276,7 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
             items: items.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value),
+                child: Text(value, style: const TextStyle(color: Color(0xFF6936F5))), // Set text color
               );
             }).toList(),
             onChanged: onChanged,
@@ -263,14 +287,91 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     );
   }
 
-  // Adds another time slot for medication
-  void _addTime() {
+  // Function to handle adding a new medication
+  Future<void> _addMedication() async {
+    if (_medicineController.text.isEmpty ||
+        _durationController.text.isEmpty ||
+        _selectedStartDate == null) {
+      // Ensure all fields are filled
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    final duration = int.tryParse(_durationController.text);
+    if (duration == null || duration < 1 || duration > 60) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Duration must be a number between 1 and 60')),
+      );
+      return;
+    }
+
     setState(() {
-      _timesPerDay.add('08:00 AM'); // Default time added, can be changed by user
+      _isLoading = true; // Start loading
     });
+
+    try {
+      // Prepare the medication data to save in Firestore
+      List<Map<String, dynamic>> schedule = _timesPerDay.map((time) {
+        // Calculate the alarm trigger time for each time per day
+        DateTime alarmTriggerTime = DateTime(
+          _selectedStartDate!.year,
+          _selectedStartDate!.month,
+          _selectedStartDate!.day,
+          int.parse(time.split(':')[0]) + (time.contains('PM') ? 12 : 0),
+          int.parse(time.split(':')[1].split(' ')[0]),
+        );
+
+        return {
+          'date': Timestamp.fromDate(_selectedStartDate!), // Start date for the medication
+          'alarm_trigger_time': Timestamp.fromDate(alarmTriggerTime), // Alarm time for the medication
+          'taken': false, // Initially set to not taken
+        };
+      }).toList();
+
+      int totalDosages = duration * _timesPerDay.length; // Calculate total dosages
+
+      await _firestore.collection('medications').add({
+        'medicine': _medicineController.text,
+        'dosage': {
+          'value': int.parse(_selectedDosageValue),
+          'unit': _selectedDosageUnit,
+        },
+        'start_date': Timestamp.fromDate(_selectedStartDate!), // Use Timestamp
+        'duration': duration,
+        'times_per_day': _timesPerDay,
+        'schedule': schedule, // Ensure schedule field is populated
+        'total_dosages': totalDosages, // Store total dosages
+        'user_id': FirebaseAuth.instance.currentUser?.uid, // Store user ID
+      });
+
+      // Reset the fields after adding medication
+      _medicineController.clear();
+      _durationController.clear();
+      _selectedStartDate = null;
+      _timesPerDay = ['08:00 AM']; // Reset to default time
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Medication added successfully')),
+      );
+
+      // Navigate to the home screen after adding medication
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to add medication')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
+    }
   }
 
-  // Allows user to select the time for taking the medication
+  // Function to select a time for medication
   Future<void> _selectTime(String currentTime) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -284,87 +385,20 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     }
   }
 
-  // Handles the "Add Medication" button press to save medication details to Firestore
-  Future<void> _addMedication() async {
-    if (_medicineController.text.isEmpty || _selectedStartDate == null) {
-      // Show an error message if required fields are empty
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill out all fields')));
-      return;
-    }
+  // Function to add another time to the medication schedule
+  void _addTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 8, minute: 0),
+    );
 
-    setState(() {
-      _isLoading = true; // Show loading indicator
-    });
-
-    try {
-      // Retrieve the current user's UID
-      User? user = FirebaseAuth.instance.currentUser; // Get the logged-in user
-      String userId = user!.uid; // Extract the user's ID
-
-      // Generate the Firestore document
-      await _firestore.collection('medications').add({
-        'medication_name': _medicineController.text,
-        'medication_type': _selectedDosageUnit,
-        'dosage': {
-          'value': int.parse(_selectedDosageValue),
-          'unit': _selectedDosageUnit,
-        },
-        'schedule': _generateSchedule(), // Generates the medication schedule
-        'user_id': userId, // Use the authenticated user's ID
-        'progress_count': 0,
-        'total_dosages': _timesPerDay.length * _getDurationInDays(),
-        'progress_line': '0/${_timesPerDay.length * _getDurationInDays()}',
-        'start_date': _selectedStartDate,
-        'duration': _getDurationInDays(),
-        'created_at': DateTime.now(), // Ensure created_at is set
-        'notes': 'Take with food if needed.', // Allow users to edit this
-      });
-
-      // Show a SnackBar to inform the user that the medication has been added
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Medication added and alarm set!'),
-          duration: Duration(seconds: 3), // Set the SnackBar to appear for 3 seconds
-        ),
-      );
-
-      // Navigate to the HomeScreen after medication is added
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } catch (e) {
-      // Show error message if something went wrong
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to add medication')));
-    } finally {
+    if (pickedTime != null) {
       setState(() {
-        _isLoading = false; // Stop loading indicator
+        String formattedTime = pickedTime.format(context);
+        if (!_timesPerDay.contains(formattedTime)) {
+          _timesPerDay.add(formattedTime); // Add the selected time
+        }
       });
     }
-  }
-
-  // Helper function to calculate the duration in days from the selected duration
-  int _getDurationInDays() {
-    if (_selectedDuration == '3 days') return 3;
-    if (_selectedDuration == '1 week') return 7;
-    if (_selectedDuration == '2 weeks') return 14;
-    if (_selectedDuration == '3 weeks') return 21;
-    if (_selectedDuration == '1 month') return 30;
-    return 0;
-  }
-
-  // Generates a schedule for the medication based on the times per day and start date
-  List<Map<String, dynamic>> _generateSchedule() {
-    List<Map<String, dynamic>> schedule = [];
-    for (int i = 0; i < _getDurationInDays(); i++) {
-      for (String time in _timesPerDay) {
-        schedule.add({
-          'date': _selectedStartDate!.add(Duration(days: i)),
-          'time': time,
-          'taken': false, // Mark the medication as not yet taken
-        });
-      }
-    }
-    return schedule;
   }
 }
