@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore integration
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import 'package:intl/intl.dart'; // For date formatting
-import 'done_splash_screen.dart'; // Import the DoneSplashScreen
 
 class MedicationDetailsScreen extends StatefulWidget {
   final String medicationId; // Accept medication ID as a parameter
@@ -45,6 +44,17 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
     }
   }
 
+  // Delete the medication
+  Future<void> _deleteMedication() async {
+    try {
+      await _firestore.collection('medications').doc(widget.medicationId).delete();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Medication deleted.')));
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting medication: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Show a loading indicator while fetching the medication details
@@ -63,8 +73,8 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
     // Medication details UI
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medication Details'),
-        backgroundColor: Colors.purple[800], // Changed to a darker purple
+        title: const Text('Medication Details', style: TextStyle(fontFamily: 'Pacifico')),
+        backgroundColor: const Color(0xFF6936F5), // Updated background color
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -82,95 +92,88 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
                   children: [
                     Text(
                       'Medication Name',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      medicationDetails!['medication_name'] ?? 'N/A',
-                      style: const TextStyle(fontSize: 20),
+                      medicationDetails!['medicine'] ?? 'N/A', // Access the medicine field
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Dosage',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       '${medicationDetails!['dosage']?['value'] ?? 'N/A'} ${medicationDetails!['dosage']?['unit'] ?? 'N/A'}',
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Schedule',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       _formatSchedule(medicationDetails!['schedule']),
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Total Dosage',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '$totalDosages',
-                      style: const TextStyle(fontSize: 20),
+                      '${medicationDetails!['total_dosages'] ?? 0}',
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Progress Count',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       '$progressCount',
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
                     Text(
                       'Progress Line',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.grey,
-                      color: Colors.purple[700], // Changed to a darker purple
+                      color: const Color(0xFF6936F5),
                       minHeight: 10,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       '$progressCount / $totalDosages',
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const Divider(height: 20, thickness: 1),
-                    Text(
+                    const Text(
                       'Notes',
-                      style: TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple[800]), // Changed to a darker purple
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF6936F5), fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       medicationDetails!['notes'] ?? 'N/A',
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico'),
                     ),
                     const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _deleteMedication,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red, // Delete button color
+                      ),
+                      child: const Text('Delete Medication', style: TextStyle(fontFamily: 'Pacifico')),
+                    ),
                   ],
                 ),
               ),
@@ -187,11 +190,11 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
     }
 
     return schedule.map((s) {
-      if (s['timestamp'] != null && s['timestamp'] is Timestamp) {
-        return DateFormat('yyyy-MM-dd HH:mm').format(
-            (s['timestamp'] as Timestamp).toDate());
+      if (s['alarm_trigger_time'] != null && s['alarm_trigger_time'] is Timestamp) {
+        String time = DateFormat('hh:mm a').format((s['alarm_trigger_time'] as Timestamp).toDate());
+        return 'Alarm at $time'; // Show alarm time only
       } else {
-        return 'Invalid date';
+        return 'Invalid time';
       }
     }).toList().join(', ');
   }
