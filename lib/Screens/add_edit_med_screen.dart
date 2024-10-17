@@ -43,18 +43,20 @@ class _NewMedicationScreenState extends State<NewMedicationScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF6936F5), // Set the full background color
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF6936F5), // Set the AppBar background color
         elevation: 0,
         centerTitle: true,
         title: const Text(
           'New Medication',
           style: TextStyle(
-            color: Color(0xFF6936F5), // Set the text title color
+            color: Colors.white, // Set the text color to white
             fontWeight: FontWeight.bold,
             fontSize: 27,
+            fontFamily: 'Pacifico', // Set the font to Pacifico
           ),
         ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
