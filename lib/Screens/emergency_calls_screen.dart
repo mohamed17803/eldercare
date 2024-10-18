@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class EmergencyCallsScreen extends StatefulWidget {
   const EmergencyCallsScreen({super.key});
@@ -8,6 +9,7 @@ class EmergencyCallsScreen extends StatefulWidget {
   @override
   _EmergencyCallsScreenState createState() => _EmergencyCallsScreenState();
 }
+
 class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
   String emergencyContactNumber = '';
   bool isCalling = false; // Track if a call is in progress
@@ -32,10 +34,11 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
 
       if (snapshot.docs.isNotEmpty) {
         emergencyContactNumber = snapshot.docs.first['contact_number'];
-        // Set isCalling to true to indicate that a call is being handled
         setState(() {
-          isCalling = true;
+          isCalling = true; // Set to true when contact is fetched
         });
+        // Make the call immediately
+        await _makeCall(emergencyContactNumber);
       } else {
         print('No emergency contact found for this user.');
       }
@@ -44,10 +47,22 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
     }
   }
 
+  // Function to handle phone call and navigate to home screen after the call ends
+  Future<void> _makeCall(String number) async {
+    await FlutterPhoneDirectCaller.callNumber(number);
+    // After the call ends, navigate to the home screen
+    _navigateToHome();
+  }
+
+  // Navigate to the home screen
+  void _navigateToHome() {
+    Navigator.pushReplacementNamed(context, '/home'); // Adjust the route name to your home screen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF6936F5), // Same background color
+      backgroundColor: const Color(0xFF6936F5),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -57,7 +72,7 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
               style: TextStyle(
                 fontFamily: 'Pacifico',
                 fontSize: 30,
-                color: Colors.white, // Same font color
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 20),
@@ -67,7 +82,7 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
                 style: const TextStyle(
                   fontFamily: 'Pacifico',
                   fontSize: 20,
-                  color: Colors.white, // Same font color
+                  color: Colors.white,
                 ),
               ),
             ] else ...[
@@ -76,12 +91,11 @@ class _EmergencyCallsScreenState extends State<EmergencyCallsScreen> {
                 style: TextStyle(
                   fontFamily: 'Pacifico',
                   fontSize: 20,
-                  color: Colors.white, // Same font color
+                  color: Colors.white,
                 ),
               ),
             ],
             const SizedBox(height: 40),
-            // Placeholder for any additional UI elements
           ],
         ),
       ),
