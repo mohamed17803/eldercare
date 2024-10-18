@@ -1,10 +1,14 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'dart:async';
 import 'package:volume_control/volume_control.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:intl/intl.dart';
+import 'package:vibration/vibration.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'medication_progress_screen.dart'; // Import the MedicationProgressScreen
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
@@ -16,94 +20,93 @@ class AlarmScreen extends StatefulWidget {
 class _AlarmScreenState extends State<AlarmScreen> {
   Timer? _timer;
   late DateTime _currentTime;
-  late StreamSubscription<QuerySnapshot> _subscription;
-  final FlutterRingtonePlayer _ringtonePlayer = FlutterRingtonePlayer(); // Create an instance
+  late AudioPlayer _audioPlayer;
+  String medicationName = ''; // Medication name from Firestore
+  String dosage = ''; // Dosage from Firestore
+  String medicationId = ''; // Store the medication ID for Firestore updates
 
   @override
   void initState() {
     super.initState();
     _currentTime = DateTime.now();
+    _audioPlayer = AudioPlayer();
     _setMaxVolume();
-    _startClock();
-    _subscribeToAlarms();
+    _playAlarmSound();
+    _vibratePhone();
+    _flashLightBlink();
+    _fetchAndDisplayMedicationData(); // Fetch the medication data and display it
+    _startAutoDismissTimer();
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
   }
 
-  // Set the device volume to maximum
+  // Set the volume to maximum
   void _setMaxVolume() async {
-    try {
-      await VolumeControl.setVolume(1.0);
-    } catch (e) {
-      print('Error setting volume: $e');
-    }
-  }
-
-  // Start a timer to update the current time every second
-  void _startClock() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
-  }
-
-  // Subscribe to Firestore to listen for medication alarms
-  void _subscribeToAlarms() {
-    _subscription = FirebaseFirestore.instance
-        .collection('medications')
-        .snapshots()
-        .listen((QuerySnapshot snapshot) {
-      for (var doc in snapshot.docs) {
-        var schedule = doc['schedule'] as List<dynamic>;
-        for (var entry in schedule) {
-          var alarmTime = (entry['timestamp'] as Timestamp).toDate();
-          if (alarmTime.isBefore(_currentTime.add(const Duration(minutes: 1))) &&
-              alarmTime.isAfter(_currentTime.subtract(const Duration(minutes: 1)))) {
-            _playAlarmSound(doc, entry);
-          }
-        }
-      }
-    }, onError: (error) {
-      print('Error subscribing to medications: $error');
-    });
+    await VolumeControl.setVolume(1.0);
   }
 
   // Play the alarm sound
-  void _playAlarmSound(DocumentSnapshot doc, dynamic entry) async {
+  void _playAlarmSound() async {
     try {
-      _ringtonePlayer.play(
-        android: AndroidSounds.alarm,
-        ios: IosSounds.alarm,
-        looping: true,
-        volume: 1.0,
-        asAlarm: true,
-      );
-
-      // Start a timer to handle missed alarm
-      Timer(const Duration(seconds: 30), () {
-        // If the alarm is not canceled within 30 seconds
-        _triggerEmergencyCall(doc, entry);
-      });
+      await _audioPlayer.setSource(AssetSource('assets/medication.mp3'));
+      await _audioPlayer.resume();
     } catch (e) {
       print('Error playing sound: $e');
     }
   }
 
-  // Trigger an emergency call if the alarm is missed
-  void _triggerEmergencyCall(DocumentSnapshot doc, dynamic entry) async {
-    try {
-      // Update Firestore document for missed alarm
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot freshDoc = await transaction.get(doc.reference);
-        var updatedSchedule = freshDoc['schedule'] as List<dynamic>;
-        var updatedEntry = updatedSchedule.firstWhere((e) => e['timestamp'] == entry['timestamp']);
-        updatedEntry['actions']['alarmed'] = true;
-        transaction.update(freshDoc.reference, {'schedule': updatedSchedule});
-      });
-
-      // Navigate to Missed Alarm Screen
-      Navigator.pushReplacementNamed(context, '/MissedAlarmScreen', arguments: doc.id);
-    } catch (e) {
-      print('Error triggering emergency call: $e');
+  // Vibrate the phone
+  void _vibratePhone() async {
+    bool? hasVibrator = await Vibration.hasVibrator();
+    if (hasVibrator == true) {
+      Vibration.vibrate(duration: 1000); // Vibrate for 1 second
+    } else {
+      print("Vibration not supported on this device.");
     }
   }
 
-  // Update the current time
+  // Flash the camera light
+  void _flashLightBlink() async {
+    try {
+      TorchLight.enableTorch();
+      await Future.delayed(const Duration(milliseconds: 500)); // Flash for 0.5 sec
+      TorchLight.disableTorch();
+    } catch (e) {
+      print("Error flashing light: $e");
+    }
+  }
+
+  // Fetch the medication data
+  Future<void> _fetchAndDisplayMedicationData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Assuming medicationId is passed through navigation arguments
+      final String medicationId = ModalRoute.of(context)!.settings.arguments as String;
+
+      DocumentSnapshot medicationDoc = await FirebaseFirestore.instance
+          .collection('medications')
+          .doc(medicationId)
+          .get();
+
+      if (medicationDoc.exists) {
+        setState(() {
+          medicationName = medicationDoc['medicine'] ?? 'Unknown';
+          dosage = '${medicationDoc['dosage']['value']} ${medicationDoc['dosage']['unit']}';
+          this.medicationId = medicationId; // Store the medicationId for future updates
+        });
+      }
+    }
+  }
+
+  // Start the auto-dismiss timer
+  void _startAutoDismissTimer() {
+    const oneMinute = Duration(minutes: 1);
+    _timer = Timer(oneMinute, () {
+      Navigator.pushReplacementNamed(context, '/MissedAlarmScreen');
+    });
+  }
+
+  // Update time every second
   void _updateTime() {
     setState(() {
       _currentTime = DateTime.now();
@@ -113,8 +116,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    _ringtonePlayer.stop();
-    _subscription.cancel();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -154,11 +157,33 @@ class _AlarmScreenState extends State<AlarmScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            Text(
+              medicationName,
+              style: const TextStyle(
+                fontFamily: 'Pacifico',
+                fontSize: 25,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Dosage: $dosage',
+              style: const TextStyle(
+                fontFamily: 'Pacifico',
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 40),
             SliderButton(
               action: () async {
-                _ringtonePlayer.stop();
-                // Navigate to Medication Detail Screen
-                await Navigator.pushReplacementNamed(context, '/MedicationdetScreen');
+                _timer?.cancel();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MedicationProgressScreen(medicationId: medicationId),
+                  ),
+                );
                 return true;
               },
               label: const Text(

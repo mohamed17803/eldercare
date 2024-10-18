@@ -1,6 +1,6 @@
 plugins {
     id "com.android.application"
-    id("com.google.gms.google-services")
+    id "com.google.gms.google-services"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -13,24 +13,18 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
 android {
-    namespace "com.example.eldercare"
     compileSdk 34
-    ndkVersion flutter.ndkVersion
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    defaultConfig {
+        applicationId "com.example.eldercare"
+        minSdk 23
+        targetSdk 34 // Ensure this matches compileSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     kotlinOptions {
@@ -39,14 +33,6 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    defaultConfig {
-        applicationId "com.example.eldercare"
-        minSdkVersion 23
-        targetSdkVersion 34 // Ensure this matches compileSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
     }
 
     buildTypes {
@@ -71,8 +57,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
-    implementation 'com.twilio:voice-android:5.7.2' // Updated Twilio Voice SDK
+    implementation 'com.twilio:voice-android:5.7.2' // Twilio Voice SDK
     implementation 'com.twilio.sdk:twilio:8.31.1' // Twilio Java SDK for SMS
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }
 
 apply plugin: 'com.android.application'

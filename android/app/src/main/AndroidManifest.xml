@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.eldercare">
 
     <!-- Add necessary permissions -->
@@ -33,7 +34,8 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="Instantiatable">
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -62,12 +64,12 @@
             </intent-filter>
         </receiver>
 
-        <!-- Add AlarmService to run the alarm -->
         <service
             android:name=".AlarmService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.FOREGROUND_SERVICE" />
+
 
     </application>
 
