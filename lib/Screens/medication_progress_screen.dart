@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'done_splash_screen.dart';
 
 class MedicationProgressScreen extends StatelessWidget {
@@ -13,9 +12,9 @@ class MedicationProgressScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Medication Progress'),
-        backgroundColor: Color(0xFF6936F5), // Set AppBar color
+        backgroundColor: const Color(0xFF6936F5), // Set AppBar color
       ),
-      backgroundColor: Color(0xFF6936F5), // Set background color
+      backgroundColor: const Color(0xFF6936F5), // Set background color
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
             .collection('medications')
@@ -23,18 +22,20 @@ class MedicationProgressScreen extends StatelessWidget {
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('No medication found.'));
+            return const Center(child: Text('No medication found.'));
           }
 
           final medicationData = snapshot.data!.data() as Map<String, dynamic>;
           final medicationName = medicationData['medicine'] ?? 'Unknown';
           final dosage = medicationData['dosage'] ?? 0; // Fetch dosage from Firestore
           final notes = medicationData['notes'] ?? 'No notes available'; // Fetch notes from Firestore
-          final progressCount = medicationData['progress_field'] ?? 0; // Fetch progress from Firestore
+          final progressCount = medicationData['progress_count'] ?? 0; // Fetch progress from Firestore
+          final totalDosages = medicationData['total_dosages'] ?? 0; // Total dosages to take
+          final progressLine = medicationData['progress_line'] ?? ''; // Fetch progress line
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -44,24 +45,29 @@ class MedicationProgressScreen extends StatelessWidget {
               children: [
                 Text(
                   'Medication Name: $medicationName',
-                  style: TextStyle(fontSize: 24, fontFamily: 'Pacifico', color: Colors.white),
+                  style: const TextStyle(fontSize: 24, fontFamily: 'Pacifico', color: Colors.white),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   'Dosage: $dosage mg',
-                  style: TextStyle(fontSize: 20, fontFamily: 'Pacifico', color: Colors.white),
+                  style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico', color: Colors.white),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
-                  'Progress: $progressCount doses taken',
-                  style: TextStyle(fontSize: 20, fontFamily: 'Pacifico', color: Colors.white),
+                  'Progress: $progressCount doses taken out of $totalDosages',
+                  style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico', color: Colors.white),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+                Text(
+                  'Progress Line: $progressLine',
+                  style: const TextStyle(fontSize: 20, fontFamily: 'Pacifico', color: Colors.white),
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'Notes: $notes',
-                  style: TextStyle(fontSize: 16, fontFamily: 'Pacifico', color: Colors.white),
+                  style: const TextStyle(fontSize: 16, fontFamily: 'Pacifico', color: Colors.white),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -74,12 +80,12 @@ class MedicationProgressScreen extends StatelessWidget {
                         updateMedicationStatus(medicationId, 'not taken', dosage);
                         Navigator.pop(context); // Go back to the previous screen
                       },
-                      child: Text(
+                      child: const Text(
                         'Skip',
                         style: TextStyle(fontFamily: 'Pacifico'),
                       ),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green, // Color for the Done button
@@ -89,7 +95,9 @@ class MedicationProgressScreen extends StatelessWidget {
                         updateMedicationStatus(medicationId, 'taken', dosage);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SplashScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const DoneSplashScreen(),
+                          ),
                         );
                       },
                       child: const Text(
@@ -112,7 +120,7 @@ class MedicationProgressScreen extends StatelessWidget {
         .collection('medications')
         .doc(medicationId)
         .update({
-      'scheduled_status': status,
+      'schedule.scheduled_status': status, // Reflect the status in Firestore
       'progress_field': FieldValue.increment(dosage), // Increment progress field by dosage
     });
   }

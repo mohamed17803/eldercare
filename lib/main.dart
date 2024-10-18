@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Import your generated Firebase options
-import 'Screens/splash_screen.dart'; // Import the splash screen file
 import 'package:permission_handler/permission_handler.dart'; // Import permission handler
-
+import 'Screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();  // Ensures the binding is initialized
   await Firebase.initializeApp(
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false, // Hide the debug banner
-      home: SplashScreen(), // Set the SplashScreen as the home screen
+      home: SplashScreen( ), // Set the SplashScreen as the home screen
     );
   }
 }
