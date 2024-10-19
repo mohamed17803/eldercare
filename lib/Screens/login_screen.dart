@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
+                                UpdatePasswordScreen()), // Navigate to ForgetPasswordScreen
                       );
                     },
                     child: const Text(

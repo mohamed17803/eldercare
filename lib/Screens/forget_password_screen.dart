@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:flutter/material.dart';
 import 'login_screen.dart'; // Import the LoginPage
 
 class UpdatePasswordScreen extends StatelessWidget {
-  const UpdatePasswordScreen({super.key});
+  UpdatePasswordScreen({super.key}); // Make the controller non-const
+
+  // Add a TextEditingController to get the email input
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +52,10 @@ class UpdatePasswordScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 20.0), // Adjust vertical padding
               child: Column(
                 children: [
-                  const TextField(
-                    decoration: InputDecoration(
+                  // Add controller to capture email input
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.email, color: Colors.grey), // Email icon
                       hintText: '...@gmail.com',
                       hintStyle: TextStyle(color: Colors.grey), // Hint text color
@@ -63,8 +69,31 @@ class UpdatePasswordScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   ElevatedButton(
-                    onPressed: () {
-                      // Action for Send button
+                    onPressed: () async {
+                      // Add functionality to send the password reset email
+                      if (emailController.text.isNotEmpty) {
+                        try {
+                          await FirebaseAuth.instance.sendPasswordResetEmail(
+                            email: emailController.text.trim(),
+                          );
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString()}')),
+                          );
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please enter an email address')),
+                        );
+                      }
                     },
                     child: const Text(
                       'Send',
@@ -92,4 +121,3 @@ class UpdatePasswordScreen extends StatelessWidget {
     );
   }
 }
-
