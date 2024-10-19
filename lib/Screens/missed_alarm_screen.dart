@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:volume_control/volume_control.dart';
+import 'package:real_volume/real_volume.dart'; //  real_volume
 import 'package:slider_button/slider_button.dart';
 import 'package:intl/intl.dart';
 import 'package:vibration/vibration.dart';
@@ -38,7 +38,7 @@ class _MissedAlarmScreenState extends State<MissedAlarmScreen> {
     super.initState();
     _currentTime = DateTime.now();
     _audioPlayer = AudioPlayer();
-    _setMaxVolume();
+    _setMaxVolume(); // real_volume
     _playAlarmSound();
     _vibratePhone();
     _flashLightBlink();
@@ -48,9 +48,13 @@ class _MissedAlarmScreenState extends State<MissedAlarmScreen> {
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
   }
 
-  // Set the volume to maximum
+  // Set the volume to maximum using real_volume
   void _setMaxVolume() async {
-    await VolumeControl.setVolume(1.0);
+    try {
+      await RealVolume.setVolume(1.0, showUI: true); // Set the Volume to th max
+    } catch (e) {
+      print("Error setting volume: $e");
+    }
   }
 
   // Play the alarm sound
