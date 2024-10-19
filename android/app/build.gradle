@@ -1,8 +1,8 @@
 plugins {
-    id "com.android.application"
-    id "com.google.gms.google-services"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'kotlin-android'
+    id 'dev.flutter.flutter-gradle-plugin'
 }
 
 def localProperties = new Properties()
@@ -20,7 +20,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.eldercare"
+        applicationId "com.example.eldercare" // Replace with your application ID
         minSdk 23
         targetSdk 34 // Ensure this matches compileSdkVersion
         versionCode flutterVersionCode.toInteger()
@@ -28,16 +28,16 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '1.8' // Set JVM target for Kotlin
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/main/kotlin' // Specify Kotlin source directory
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug // Use debug signing config for release
         }
     }
 
@@ -46,24 +46,27 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8 // Set Java compatibility
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
+// Flutter configuration
 flutter {
-    source '../..'
+    source '../..' // Specify Flutter source path
 }
 
+// Dependencies
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:33.4.0')
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-firestore-ktx'
-    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation platform('com.google.firebase:firebase-bom:33.4.0') // Firebase BOM for dependency management
+    implementation 'com.google.firebase:firebase-auth-ktx' // Firebase Authentication
+    implementation 'com.google.firebase:firebase-firestore-ktx' // Firebase Firestore
+    implementation 'com.google.firebase:firebase-database-ktx' // Firebase Realtime Database
     implementation 'com.twilio:voice-android:5.7.2' // Twilio Voice SDK
     implementation 'com.twilio.sdk:twilio:8.31.1' // Twilio Java SDK for SMS
-    implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core-ktx:1.13.1' // AndroidX Core library
+    implementation 'androidx.appcompat:appcompat:1.6.1' // AndroidX AppCompat library
+    implementation 'com.google.android.material:material:1.12.0' // Material Components library
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
-apply plugin: 'dev.flutter.flutter-gradle-plugin'

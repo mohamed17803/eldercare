@@ -1,14 +1,14 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:volume_control/volume_control.dart';
+import 'package:real_volume/real_volume.dart'; // Import the real_volume package
 import 'package:slider_button/slider_button.dart';
 import 'package:intl/intl.dart';
 import 'package:vibration/vibration.dart';
 import 'package:torch_light/torch_light.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'medication_progress_screen.dart'; // Import the MedicationProgressScreen
+import 'medication_progress_screen.dart'; // Import the MedicationProgressScreen for navigation
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
@@ -18,71 +18,73 @@ class AlarmScreen extends StatefulWidget {
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
-  Timer? _timer;
-  late DateTime _currentTime;
-  late AudioPlayer _audioPlayer;
-  String medicationName = ''; // Medication name from Firestore
-  String dosage = ''; // Dosage from Firestore
-  String medicationId = ''; // Store the medication ID for Firestore updates
+  Timer? _timer; // Timer to handle automatic dismissal of the alarm
+  late DateTime _currentTime; // Store the current time for display
+  late AudioPlayer _audioPlayer; // Audio player instance to play alarm sound
+  String medicationName = ''; // Medication name fetched from Firestore
+  String dosage = ''; // Dosage value fetched from Firestore
+  String medicationId = ''; // ID of the medication to be fetched and updated in Firestore
 
   @override
   void initState() {
     super.initState();
-    _currentTime = DateTime.now();
-    _audioPlayer = AudioPlayer();
-    _setMaxVolume();
-    _playAlarmSound();
-    _vibratePhone();
-    _flashLightBlink();
-    _fetchAndDisplayMedicationData(); // Fetch the medication data and display it
-    _startAutoDismissTimer();
-    Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
+    _currentTime = DateTime.now(); // Initialize the current time
+    _audioPlayer = AudioPlayer(); // Initialize the audio player
+    _setMaxVolume(); // Set the volume to maximum
+    _playAlarmSound(); // Play the alarm sound
+    _vibratePhone(); // Trigger phone vibration
+    _flashLightBlink(); // Trigger flashlight blink
+    _fetchAndDisplayMedicationData(); // Fetch and display medication data from Firestore
+    _startAutoDismissTimer(); // Start a timer to automatically dismiss the alarm after 1 minute
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime()); // Update time every second
   }
 
-  // Set the volume to maximum
+  // Set the phone's volume to the maximum level using the real_volume package
   void _setMaxVolume() async {
-    await VolumeControl.setVolume(1.0);
+    await RealVolume.setVolume(1.0); // Set volume to maximum (1.0 represents 100%)
   }
 
-  // Play the alarm sound
+  // Play the alarm sound from an asset file (medication.mp3)
   void _playAlarmSound() async {
     try {
+      // Set the audio source to the alarm sound file and play it
       await _audioPlayer.setSource(AssetSource('assets/medication.mp3'));
       await _audioPlayer.resume();
     } catch (e) {
-      print('Error playing sound: $e');
+      print('Error playing sound: $e'); // Print error message if sound fails to play
     }
   }
 
-  // Vibrate the phone
+  // Vibrate the phone for 1 second (1000 milliseconds)
   void _vibratePhone() async {
-    bool? hasVibrator = await Vibration.hasVibrator();
+    bool? hasVibrator = await Vibration.hasVibrator(); // Check if the device has a vibrator
     if (hasVibrator == true) {
       Vibration.vibrate(duration: 1000); // Vibrate for 1 second
     } else {
-      print("Vibration not supported on this device.");
+      print("Vibration not supported on this device."); // Print message if vibration is not supported
     }
   }
 
-  // Flash the camera light
+  // Blink the flashlight (flash on for 0.5 seconds, then off)
   void _flashLightBlink() async {
     try {
-      TorchLight.enableTorch();
-      await Future.delayed(const Duration(milliseconds: 500)); // Flash for 0.5 sec
-      TorchLight.disableTorch();
+      TorchLight.enableTorch(); // Turn on the flashlight
+      await Future.delayed(const Duration(milliseconds: 500)); // Wait for 0.5 seconds
+      TorchLight.disableTorch(); // Turn off the flashlight
     } catch (e) {
-      print("Error flashing light: $e");
+      print("Error flashing light: $e"); // Print error message if the flashlight fails
     }
   }
 
-  // Fetch the medication data
+  // Fetch the medication data from Firestore and display it on the screen
   Future<void> _fetchAndDisplayMedicationData() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser; // Get the current logged-in user
 
     if (user != null) {
-      // Assuming medicationId is passed through navigation arguments
+      // Retrieve the medication ID from navigation arguments
       final String medicationId = ModalRoute.of(context)!.settings.arguments as String;
 
+      // Fetch the medication document from the 'medications' collection in Firestore
       DocumentSnapshot medicationDoc = await FirebaseFirestore.instance
           .collection('medications')
           .doc(medicationId)
@@ -90,55 +92,60 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
       if (medicationDoc.exists) {
         setState(() {
+          // Set the medication name and dosage values
           medicationName = medicationDoc['medicine'] ?? 'Unknown';
           dosage = '${medicationDoc['dosage']['value']} ${medicationDoc['dosage']['unit']}';
-          this.medicationId = medicationId; // Store the medicationId for future updates
+          this.medicationId = medicationId; // Store the medication ID for future updates
         });
       }
     }
   }
 
-  // Start the auto-dismiss timer
+  // Start a timer that will automatically dismiss the alarm and navigate to the missed alarm screen after 1 minute
   void _startAutoDismissTimer() {
     const oneMinute = Duration(minutes: 1);
     _timer = Timer(oneMinute, () {
-      Navigator.pushReplacementNamed(context, '/MissedAlarmScreen');
+      Navigator.pushReplacementNamed(context, '/MissedAlarmScreen'); // Navigate to MissedAlarmScreen after 1 minute
     });
   }
 
-  // Update time every second
+  // Update the current time every second
   void _updateTime() {
     setState(() {
-      _currentTime = DateTime.now();
+      _currentTime = DateTime.now(); // Update the time
     });
   }
 
+  // Dispose of the resources when the widget is removed from the widget tree
   @override
   void dispose() {
-    _timer?.cancel();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    _timer?.cancel(); // Cancel the auto-dismiss timer
+    _audioPlayer.stop(); // Stop the audio player
+    _audioPlayer.dispose(); // Dispose of the audio player to free up resources
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Format the current date in 'yyyy-MM-dd' format
     final String formattedDate = DateFormat('yyyy-MM-dd').format(_currentTime);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF6936F5),
+      backgroundColor: const Color(0xFF6936F5), // Background color of the screen
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, // Center the content vertically
           children: <Widget>[
+            // Display the current time (hours and minutes)
             Text(
               '${_currentTime.hour}:${_currentTime.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(
-                fontFamily: 'Pacifico',
-                fontSize: 60,
-                color: Colors.white,
+                fontFamily: 'Pacifico', // Use the Pacifico font
+                fontSize: 60, // Large font size for the time
+                color: Colors.white, // White text color
               ),
             ),
+            // Display the formatted date
             Text(
               formattedDate,
               style: const TextStyle(
@@ -147,7 +154,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Add vertical space
+
+            // Display "Medication Alarm" text
             const Text(
               'Medication Alarm',
               style: TextStyle(
@@ -156,7 +165,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Add vertical space
+
+            // Display the medication name
             Text(
               medicationName,
               style: const TextStyle(
@@ -165,7 +176,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Add vertical space
+
+            // Display the dosage information
             Text(
               'Dosage: $dosage',
               style: const TextStyle(
@@ -174,10 +187,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 40), // Add vertical space
+
+            // Slider button to cancel the alarm and navigate to the MedicationProgressScreen
             SliderButton(
               action: () async {
-                _timer?.cancel();
+                _timer?.cancel(); // Cancel the auto-dismiss timer
+                // Navigate to the MedicationProgressScreen and pass the medication ID
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -186,6 +202,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 );
                 return true;
               },
+              // Label for the slider button
               label: const Text(
                 "Swipe to Cancel",
                 style: TextStyle(
@@ -195,6 +212,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   fontSize: 17,
                 ),
               ),
+              // Icon for the slider button
               icon: const Text(
                 "X",
                 style: TextStyle(
