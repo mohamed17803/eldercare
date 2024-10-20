@@ -43,8 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _dateOfBirth = userData['dob'] ?? ''; // Get date of birth from Firestore
           _emergencyContact = userData['emergency_contact'] ?? ''; // Get emergency contact from Firestore
         });
-      } else {
-        print("User data is null.");
       }
     }
   }
