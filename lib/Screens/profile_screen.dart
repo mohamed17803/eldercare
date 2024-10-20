@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase for authentication
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,28 +11,41 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Authentication instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore instance
+
   User? _user; // Current user
-  String _emergencyContact = '01069244636'; // Replace with actual emergency contact data
-  String _gender = 'Male'; // Replace with actual gender data
-  String _dateOfBirth = 'Jun 11, 2002'; // Replace with actual date of birth data
+  String _emergencyContact = ''; // Emergency contact of the logged-in user
+  String _gender = ''; // Gender of the logged-in user
+  String _dateOfBirth = ''; // Date of birth of the logged-in user
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchUserData(); // Fetch user and Firestore data
   }
 
-  // Mock function to fetch user data
-  void _fetchUserData() {
-    User? user = _auth.currentUser; // Get current user from Firebase
+  // Fetch user data from Firebase Auth and Firestore
+  void _fetchUserData() async {
+    User? user = _auth.currentUser; // Get the current logged-in user
+
     if (user != null) {
       setState(() {
-        _user = user;
-        // You can fetch additional user data here (like gender and date of birth) from Firestore if needed
-        // For example:
-        // _gender = fetchedGender; // Replace with the actual value fetched from Firestore
-        // _dateOfBirth = fetchedDateOfBirth; // Replace with the actual value fetched from Firestore
+        _user = user; // Set the user in the state
       });
+
+      // Fetch data from Firestore `users` collection for gender, dob, and emergency contact
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final userData = userDoc.data();
+
+      if (userData != null) {
+        setState(() {
+          _gender = userData['gender'] ?? ''; // Get gender from Firestore
+          _dateOfBirth = userData['dob'] ?? ''; // Get date of birth from Firestore
+          _emergencyContact = userData['emergency_contact'] ?? ''; // Get emergency contact from Firestore
+        });
+      } else {
+        print("User data is null.");
+      }
     }
   }
 
@@ -56,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
             _buildTextField(label: 'Gender', hint: _gender, isEditable: false), // Gender field uneditable
             const SizedBox(height: 16),
-            _buildTextField(label: 'Date of Birth', hint: _dateOfBirth),
+            _buildTextField(label: 'Date of Birth', hint: _dateOfBirth, isEditable: false), // DOB field uneditable
             const SizedBox(height: 32),
             Center(
               child: Container(
